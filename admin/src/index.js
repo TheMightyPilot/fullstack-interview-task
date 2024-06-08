@@ -2,6 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const config = require("config")
 const request = require("request")
+const {getData, generateCSV} = require("./export")
 
 const app = express()
 
@@ -17,6 +18,17 @@ app.get("/investments/:id", (req, res) => {
       res.send(investments)
     }
   })
+})
+
+app.get("/export", async (req, res) => {
+  try {
+    const exportData = await getData()
+    const csvData = generateCSV(exportData)
+    console.log(csvData)
+  } catch (e) {
+    console.error(e)
+    res.send(500)
+  }
 })
 
 app.listen(config.port, (err) => {
