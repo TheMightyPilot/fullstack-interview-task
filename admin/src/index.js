@@ -2,7 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const config = require("config")
 const request = require("request")
-const {getData, generateCSV} = require("./export")
+const {getData, generateCSV} = require("./exportLogic")
 
 const app = express()
 
@@ -39,3 +39,5 @@ app.listen(config.port, (err) => {
   }
   console.log(`Server running on port ${config.port}`)
 })
+
+module.exports = app

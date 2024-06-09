@@ -82,5 +82,7 @@ function generateCSV(data) {
   return csv
 }
 
-exports.getData = getData
-exports.generateCSV = generateCSV
+module.exports = {
+  getData,
+  generateCSV,
+}
