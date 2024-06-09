@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@json2csv/plainjs": "^7.0.6",
-    "@json2csv/transforms": "^7.0.6",
     "axios": "^1.7.2",
     "body-parser": "^1.19.0",
     "config": "^3.3.3",

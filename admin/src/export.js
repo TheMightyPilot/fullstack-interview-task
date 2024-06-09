@@ -1,7 +1,6 @@
 const axios = require("axios")
 const config = require("config")
 const {StreamParser} = require("@json2csv/plainjs")
-const {flatten} = require("@json2csv/transforms")
 
 function getData() {
   const getInvestments = axios.get(`${config.investmentsServiceUrl}/investments`)
@@ -18,22 +17,55 @@ function getData() {
 
 function generateCSV(data) {
   const {investments, companies} = data
-  const options = {}
+  const options = {
+    fields: [
+      {
+        value: "user",
+        label: "User",
+      },
+      {
+        value: "firstName",
+        label: "First Name",
+      },
+      {
+        value: "lastName",
+        label: "Last Name",
+      },
+      {
+        value: "date",
+        label: "Date",
+      },
+      {
+        value: "holding",
+        label: "Holding",
+      },
+      {
+        value: "value",
+        label: "Value",
+      },
+    ],
+  }
 
   const parser = new StreamParser(options)
 
   let csv = ""
   parser.onData = (chunk) => (csv += chunk.toString())
-  parser.onEnd = () => console.log(csv)
-  parser.onError = (err) => console.error(err)
-
-  parser.onHeader = (header) => console.log(header)
-  parser.onLine = (line) => console.log(line)
+  parser.onError = (err) => {
+    throw err
+  }
 
   investments.forEach((investment) => {
-    const {userId, firstName, lastName, date, holdings, investmentTotal} = investment
-    investment.holdings.forEach((holding) => {
-      const holdingCompany = companies.find((company) => company.id = holding.id)
+    const {
+      userId,
+      firstName,
+      lastName,
+      date,
+      holdings,
+      investmentTotal,
+    } = investment
+
+    holdings.forEach((holding) => {
+      const holdingCompany = companies.find((company) => company.id === holding.id)
       const currentLine = {
         user: userId,
         firstName,
@@ -42,9 +74,12 @@ function generateCSV(data) {
         holding: holdingCompany.name,
         value: investmentTotal * holding.investmentPercentage,
       }
+
       parser.pushLine(currentLine)
     })
   })
+
+  return csv
 }
 
 exports.getData = getData

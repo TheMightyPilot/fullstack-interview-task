@@ -24,7 +24,8 @@ app.get("/export", async (req, res) => {
   try {
     const exportData = await getData()
     const csvData = generateCSV(exportData)
-    console.log(csvData)
+    res.type("text/csv")
+    res.attachment("all-investments.csv").send(csvData)
   } catch (e) {
     console.error(e)
     res.send(500)
