@@ -5,13 +5,16 @@ const config = require("../config/default.json")
 const axios = require("axios")
 
 describe("exportLogic", () => {
-  describe("getData", () => {
-    it.only("should fetch investments and companies data", async () => {
-      // Mock axios.get to return fake data
-      const investmentsResp = {data: [{id: 1, name: "Investment 1"}]}
-      const companiesResp = {data: [{id: 1, name: "Company 1"}]}
-      sinon.stub(axios, "get").resolves({})
+  afterEach(() => {
+    sinon.restore()
+  })
 
+  describe("getData", () => {
+    it("should fetch investments and companies data", async () => {
+      const investmentsResp = {data: [{id: 1, name: "Investment foo"}]}
+      const companiesResp = {data: [{id: 1, name: "Company Bar"}]}
+
+      sinon.stub(axios, "get")
       axios.get.withArgs(`${config.investmentsServiceUrl}/investments`).resolves(investmentsResp)
       axios.get.withArgs(`${config.financialCompaniesServiceUrl}/companies`).resolves(companiesResp)
 
@@ -28,17 +31,18 @@ describe("exportLogic", () => {
       const mockData = {
         investments: [
           {
+            id: 1,
             userId: 1,
-            firstName: "John",
-            lastName: "Doe",
-            date: "2022-06-09",
+            firstName: "Foo",
+            lastName: "Bar",
+            date: "2024-01-01",
             holdings: [{id: 1, investmentPercentage: 0.5}],
             investmentTotal: 1000,
           },
         ],
-        companies: [{id: 1, name: "Company 1"}],
+        companies: [{id: 1, name: "Xyz"}, {id: 2, name: "Abc"}],
       }
-      const expectedCSV = "User,First Name,Last Name,Date,Holding,Value\n1,John,Doe,2022-06-09,Company 1,500\n"
+      const expectedCSV = "\"User\",\"First Name\",\"Last Name\",\"Date\",\"Holding\",\"Value\"\n1,\"Foo\",\"Bar\",\"2024-01-01\",\"Xyz\",500"
 
       const csv = generateCSV(mockData)
       expect(csv).to.equal(expectedCSV)
