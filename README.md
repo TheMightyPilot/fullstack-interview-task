@@ -79,3 +79,21 @@ Financial Companies - localhost:8082
 
 Admin - localhost:8083
 - `/investments/:id` get an investment record by id
+
+### New routes
+I have implemented a new route within the Admin micro service:
+
+Admin - localhost:8081
+- `/exports` get a csv export of all user investment holdings
+
+### Answers to Questions
+
+1. To make this service more secure, I would reccomend putting access to this behind Oauth or API Keys/Tokens. Other steps to make it more secure within this service being behind authentication could be that of user roles to set who can generate these exports. Also improving error handling and logging of which users have generated a report and when.
+
+2. For scalability of the exports service, I would place the logic of generating the csv into its own micro service which can be spun up depending on how many requests from users generating these reports there is (I'm thinking of for example using GCP Cloud Run, perhaps also with a PubSub Queue), the logic would perform the work needed without locking up the Admin backend microservice, (which may be used to handle other endpoints in the future) and when the csv has been generated, store this in a bucket for example for retrival by the user. This would probably be accessed through a frontend UI allowing the user to see historical reports and generate new ones.
+
+3. I would have liked to do a few things having more time:
+- Fix the issue with sinon seemingly having an issue with stubbing the exportLogic functions.
+- Provided more error handling & logging.
+- Added filtering to the endpoint e.g. filter by first/last name, by company name or by date.
+- Made better use of the streaming ability of the json2csv module. However this would have probably required a database to paginate through and pipe each row through to the parser.
